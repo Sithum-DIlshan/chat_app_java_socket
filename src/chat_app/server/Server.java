@@ -11,7 +11,6 @@ import java.util.HashSet;
 public class Server {
     private static final int PORT = 3000;
     private static HashSet<PrintWriter> writers = new HashSet<>();
-    private static HashSet<String> names = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
         /*ServerSocket serverSocket = new ServerSocket(3000);
@@ -49,36 +48,29 @@ public class Server {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out=new PrintWriter(socket.getOutputStream(), true);
 
-                writers.add(out);
-                while (true){
-                    out.println("NAME");
-                    name = in.readLine();
-//                    String input = in.readLine();
-                    if (name == null){
-                        return;
-                    }
-                    if (!names.contains(name)){
-                        names.add(name);
-                        break;
-                    }
-//                    for (PrintWriter writer: writers){
-//                        writer.println("MESSAGE"+"saman: "+input);
-//                    }
-                }
-                out.println("NAMEACCEPTED");
+//                System.out.println("client says"+in.readLine());
+//                out.println(in.readLine());
+//                out.flush();
+
                 writers.add(out);
 
-//                while (true){
-                    String input  = in.readLine();
-                    if (input == null){
-                        return;
+                while (true){
+                    String input = in.readLine();
+                    for (PrintWriter writer : writers){
+                        writer.println(input);
                     }
-                    for (PrintWriter writer: writers){
-                        writer.println("MESSAGE"+name+": "+input);
-                    }
-//                }
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
+            }finally {
+                if (out != null){
+                    writers.remove(out);
+                }
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

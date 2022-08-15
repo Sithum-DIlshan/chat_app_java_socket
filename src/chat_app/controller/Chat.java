@@ -2,6 +2,7 @@ package chat_app.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -32,11 +33,13 @@ public class Chat implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         uploadPhoto.setGraphic(new ImageView("chat_app/Untitled design.gif"));
-        try {
-            run();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        new Thread(() ->{
+            try {
+                run();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     public void uploadPhoto(ActionEvent actionEvent) {
@@ -48,8 +51,8 @@ public class Chat implements Initializable {
         PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
         printWriter.println(txtMsg.getText());
         printWriter.flush();*/
-        out.println(txtMsg.getText());
-        txtMsg.setText("");
+        out.println(username + " : " + txtMsg.getText()+"\n\n");
+        out.flush();
     }
 
     public void setUserName(String username) {
@@ -63,16 +66,14 @@ public class Chat implements Initializable {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(), true);
 
-            int i = 0;
-            /*while (i < 100){*/
+            while(true){
                 String line = in.readLine();
-                if (line.startsWith("SUBMITNAME")){
-                    out.println(username);
-                } else if (line.startsWith("MESSAGE")) {
-                    textArea.appendText(line+"\n");
-                }
-           /* i++;
-            }*/
+                Platform.runLater(()->{
+                    textArea.appendText(line);
+                    textArea.appendText("\n");
+                });
+
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
