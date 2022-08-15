@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="607.0" prefWidth="669.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="chat_app.controller.Chat">
+   <children>
+      <AnchorPane prefHeight="38.0" prefWidth="669.0" style="-fx-background-color: #bfbfbf;">
+         <children>
+            <Label layoutX="14.0" layoutY="11.0" text="Chat Room">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <TextArea fx:id="textArea" editable="false" layoutX="36.0" layoutY="63.0" prefHeight="433.0" prefWidth="597.0" />
+      <JFXTextField fx:id="txtMsg" focusColor="#1e1e1e" layoutX="36.0" layoutY="541.0" prefHeight="28.0" prefWidth="479.0" promptText="message" style="-fx-border-color: #bfbfbf;" />
+      <JFXButton fx:id="uploadPhoto" contentDisplay="CENTER" graphicTextGap="0.0" layoutX="475.0" layoutY="529.0" maxHeight="64.0" onAction="#uploadPhoto" prefHeight="64.0" prefWidth="40.0" style="-fx-max-width: 40px; -fx-max-height: 40px;" />
+      <JFXButton fx:id="sendMessage" layoutX="553.0" layoutY="541.0" onAction="#sendMessageOnAction" prefHeight="28.0" prefWidth="80.0" style="-fx-background-color: #3a48de;" text="Send" textFill="WHITE" />
+   </children>
+</AnchorPane>
