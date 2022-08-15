@@ -7,13 +7,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.ResourceBundle;
 
 /**
@@ -32,6 +31,12 @@ public class Chat implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        try {
+            Font f  = Font.loadFont(new FileInputStream(new File("./src/chat_app/fonts/OpenSansEmoji    .ttf")), 12);
+            txtMsg.setFont(f);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         uploadPhoto.setGraphic(new ImageView("chat_app/Untitled design.gif"));
         new Thread(() ->{
             try {
@@ -63,7 +68,7 @@ public class Chat implements Initializable {
         try {
             String serverAddress = "localhost";
             Socket socket = new Socket(serverAddress, 3000);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
             out = new PrintWriter(socket.getOutputStream(), true);
 
             while(true){
@@ -71,6 +76,9 @@ public class Chat implements Initializable {
                 Platform.runLater(()->{
                     textArea.appendText(line);
                     textArea.appendText("\n");
+                    byte[] emojiByteCode = new byte[]{(byte)0xF0, (byte)0x9F, (byte)0x98, (byte)0x81};
+                    String emoji = new String(emojiByteCode, Charset.forName("UTF-8"));
+
                 });
 
             }
