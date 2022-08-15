@@ -24,11 +24,8 @@ public class LoginController {
 
 
     public void loginOnAction(ActionEvent actionEvent) throws SQLException, ClassNotFoundException, IOException {
-        Connection connection =
-                DbConnection.getInstance().getConnection();
-        ResultSet rst =
-                connection.prepareStatement("SELECT * FROM Users").executeQuery();
-            while (rst.next()){
+
+
                 if (rst.getString(1).equals(txtUserName.getText())){
                     System.out.println(txtUserName.getText()+" logged");
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chat_app/views/Chat.fxml"));
