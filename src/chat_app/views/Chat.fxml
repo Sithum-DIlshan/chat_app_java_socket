@@ -17,6 +17,7 @@
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
+            <JFXButton fx:id="minimizeBtn" contentDisplay="CENTER" graphicTextGap="0.0" layoutX="604.0" layoutY="-1.0" maxHeight="54.0" onAction="#minimizeOnAction" prefHeight="54.0" prefWidth="40.0" style="-fx-max-width: 40px; -fx-max-height: 40px;" />
          </children>
       </AnchorPane>
       <JFXTextField fx:id="txtMsg" focusColor="#1e1e1e" layoutX="36.0" layoutY="541.0" prefHeight="28.0" prefWidth="479.0" promptText="message" style="-fx-border-color: #bfbfbf;" />

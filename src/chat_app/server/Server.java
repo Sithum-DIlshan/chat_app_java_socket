@@ -48,11 +48,9 @@ public class Server {
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 OutputStreamWriter outputStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
                 out=new PrintWriter(outputStream, true);
-
 //                System.out.println("client says"+in.readLine());
 //                out.println(in.readLine());
 //                out.flush();
-
                 writers.add(out);
 
                 while (true){

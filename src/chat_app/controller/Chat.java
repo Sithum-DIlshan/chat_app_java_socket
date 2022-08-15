@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,7 +24,8 @@ public class Chat implements Initializable {
     public JFXButton sendMessage;
     public TextArea textArea;
     public JFXTextField txtMsg;
-//    Socket socket = null;
+    public JFXButton minimizeBtn;
+    //    Socket socket = null;
     private String username;
     BufferedReader in;
     PrintWriter out;
@@ -31,13 +33,14 @@ public class Chat implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            Font f  = Font.loadFont(new FileInputStream(new File("./src/chat_app/fonts/OpenSansEmoji    .ttf")), 12);
-            txtMsg.setFont(f);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            Font f  = Font.loadFont(new FileInputStream(new File("./src/chat_app/fonts/OpenSansEmoji    .ttf")), 12);
+//            txtMsg.setFont(f);
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException(e);
+//        }
         uploadPhoto.setGraphic(new ImageView("chat_app/Untitled design.gif"));
+        minimizeBtn.setGraphic(new ImageView("chat_app/icons8-drop-down-30.png"));
         new Thread(() ->{
             try {
                 run();
@@ -87,4 +90,8 @@ public class Chat implements Initializable {
         }
     }
 
+    public void minimizeOnAction(ActionEvent actionEvent) {
+        Stage stage = (Stage) txtMsg.getScene().getWindow();
+        stage.setIconified(true);
+    }
 }

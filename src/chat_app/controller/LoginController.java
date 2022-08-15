@@ -18,6 +18,7 @@ import java.util.HashSet;
 public class LoginController {
     private static final HashSet<String> names = new HashSet<>();
     public TextField txtUserName;
+    private static double x, y;
 
     public void loginOnAction(ActionEvent actionEvent) throws IOException {
         if (txtUserName.getText() != null && !names.contains(txtUserName.getText())) {
@@ -32,6 +33,16 @@ public class LoginController {
             stage.setScene(scene);
             stage.initStyle(StageStyle.TRANSPARENT);
             stage.show();
+            load.setOnMousePressed(event -> {
+                x = event.getSceneX();
+                y = event.getSceneY();
+            });
+            load.setOnMouseDragged(event -> {
+
+                stage.setX(event.getScreenX() - x);
+                stage.setY(event.getScreenY() - y);
+
+            });
         }
     }
 }
