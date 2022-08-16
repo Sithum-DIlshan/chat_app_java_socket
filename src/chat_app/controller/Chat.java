@@ -1,31 +1,37 @@
 package chat_app.controller;
 
+import chat_app.utils.CheckString;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.ResourceBundle;
 
 /**
  * @author sithum
  */
 public class Chat implements Initializable {
+    public static final HashSet<Socket> sockets = new HashSet<>();
     public JFXButton uploadPhoto;
     public JFXButton sendMessage;
     public TextArea textArea;
@@ -35,10 +41,10 @@ public class Chat implements Initializable {
     public ScrollPane scrollPane;
     BufferedReader in;
     PrintWriter out;
-    OutputStream outFile;
-    InputStream inputStream;
+//    InputStream inputStream;
     BufferedInputStream bufferedInputStream;
     BufferedImage bufferedImage;
+    private OutputStream outputStream;
     //    Socket socket = null;
     private String username;
     private FileChooser fileChooser;
@@ -46,23 +52,27 @@ public class Chat implements Initializable {
     private FileInputStream fis;
     //    private Image image;
     private Socket socket;
+    Thread thread;
+
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
         uploadPhoto.setGraphic(new ImageView("chat_app/Untitled design.gif"));
         minimizeBtn.setGraphic(new ImageView("chat_app/icons8-drop-down-30.png"));
-        new Thread(() -> {
+        thread = new Thread(() -> {
             try {
                 run();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }).start();
+        });
+        thread.start();
     }
 
     public void uploadPhoto(ActionEvent actionEvent) throws IOException {
-        outFile = socket.getOutputStream();
+       /* outFile = socket.getOutputStream();
         fileChooser = new FileChooser();
         fileChooser.setTitle("Choose file");
         Stage stage = (Stage) txtMsg.getScene().getWindow();
@@ -81,12 +91,36 @@ public class Chat implements Initializable {
             ImageIO.write(bufferedImage, "png", bufferedOutputStream);
 
         }
+*/
+        fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose file");
+        Stage stage = (Stage) txtMsg.getScene().getWindow();
 
+        file = fileChooser.showOpenDialog(stage);
+        if (file != null) {
+            outputStream = socket.getOutputStream();
+            BufferedImage image = ImageIO.read(file);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", byteArrayOutputStream);
+
+            byte[] size = ByteBuffer.allocate(4).putInt(byteArrayOutputStream.size()).array();
+            outputStream.write(size);
+            outputStream.write(byteArrayOutputStream.toByteArray());
+            outputStream.flush();
+            System.out.println("Flushed: " + System.currentTimeMillis());
+        }
     }
 
     public void sendMessageOnAction(ActionEvent actionEvent) throws IOException {
-        out.println(username + " : " + txtMsg.getText() + "\n");
-        out.flush();
+        String msg = txtMsg.getText();
+        if (msg.equals("exit")){
+            Stage stage = (Stage) txtMsg.getScene().getWindow();
+            stage.close();
+        }else {
+            out.println(username + " : " + msg + "\n");
+            out.flush();
+            txtMsg.setText("");
+        }
     }
 
     public void setUserName(String username) {
@@ -97,18 +131,48 @@ public class Chat implements Initializable {
         try {
             String serverAddress = "localhost";
             socket = new Socket(serverAddress, 3000);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            InputStream inputStream = socket.getInputStream();
+            System.out.println(inputStream.markSupported());
+            sockets.add(socket);
+            in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             out = new PrintWriter(socket.getOutputStream(), true);
 
             while (true) {
+            /*    String line = in.readLine();
+                if (CheckString.isAsciiPrintable(line)) {
+                    Platform.runLater(() -> {
+                        Text txt = new Text("\n\n" + line);
+                        txtFlow.getChildren().add(txt);
+                    });
+
+                } else {
+                    InputStream inputStream1 = socket.getInputStream();
+                    byte[] sizeAr = new byte[4];
+                    inputStream1.read(sizeAr);
+                    int size = ByteBuffer.wrap(sizeAr).asIntBuffer().get();
+
+                    byte[] imageAr = new byte[size];
+                    inputStream1.read(imageAr);
+
+                    BufferedImage image = ImageIO.read(new ByteArrayInputStream(imageAr));
+
+                    System.out.println(image == null);
+                    Platform.runLater(() -> {
+
+                        System.out.println("image");
+                        Image chatImage = SwingFXUtils.toFXImage(image, null);
+                        ImageView imageView = new ImageView();
+                        imageView.setImage(chatImage);
+                        txtFlow.getChildren().add(imageView);
+
+                    });
+                }*/
                 String line = in.readLine();
                 Platform.runLater(() -> {
                     Text txt = new Text("\n\n" + line);
                     txtFlow.getChildren().add(txt);
-                    scrollPane.setVvalue(1.0);
-                    scrollPane.setFitToWidth(true);
-
                 });
+
             }
 
         } catch (Exception e) {
@@ -121,3 +185,4 @@ public class Chat implements Initializable {
         stage.setIconified(true);
     }
 }
+
