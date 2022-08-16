@@ -3,6 +3,7 @@ package chat_app.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.HashSet;
 
 /**
@@ -13,15 +14,7 @@ public class Server {
     private static HashSet<PrintWriter> writers = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
-        /*ServerSocket serverSocket = new ServerSocket(3000);
-        Socket accept = serverSocket.accept();
-        System.out.println("client connected");
-        while(true) {
-            InputStreamReader inputStream =
-                    new InputStreamReader(accept.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(inputStream);
-            System.out.println(bufferedReader.readLine());
-        }*/
+
         System.out.println("chat server is running");
         ServerSocket listener = new ServerSocket(PORT);
         while (true){
@@ -45,16 +38,17 @@ public class Server {
         @Override
         public void run() {
             try {
+                InputStream inputStream = socket.getInputStream();
+                OutputStream outputStream1 = socket.getOutputStream();
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 OutputStreamWriter outputStream = new OutputStreamWriter(socket.getOutputStream(), "UTF-8");
                 out=new PrintWriter(outputStream, true);
-//                System.out.println("client says"+in.readLine());
-//                out.println(in.readLine());
-//                out.flush();
+
                 writers.add(out);
 
                 while (true){
                     String input = in.readLine();
+
                     for (PrintWriter writer : writers){
                         writer.println(input);
                     }
